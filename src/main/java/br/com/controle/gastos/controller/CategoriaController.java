@@ -1,11 +1,14 @@
 package br.com.controle.gastos.controller;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,8 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.controle.gastos.models.Categoria;
-import br.com.controle.gastos.repository.CategoriaRepository;
+import br.com.controle.gastos.services.CategoriaService;
 import br.com.controle.gastos.vo.CategoriaDescricaoVo;
 import br.com.controle.gastos.vo.CategoriaVo;
 
@@ -27,48 +29,55 @@ import br.com.controle.gastos.vo.CategoriaVo;
 public class CategoriaController {
 
 	@Autowired
-	CategoriaRepository categoriaRepository;
+	CategoriaService categoriaService;
 
 	@GetMapping("/{id}")
 	@ResponseBody
 	@ResponseStatus(code = HttpStatus.OK)
-	public Optional<CategoriaVo> retornaCategoria(@PathVariable("id") Long id) {
-		return this.categoriaRepository.findById(id).map(categoria -> new CategoriaVo(categoria));
+	public ResponseEntity<?> retornaCategoria(@PathVariable("id") Long id) {
+		CategoriaVo categoriaRetornada = categoriaService.retornaCategoria(id);
+		return new ResponseEntity<CategoriaVo>(categoriaRetornada, HttpStatus.OK);
 	}
 
 	@PostMapping
 	@ResponseBody
 	@ResponseStatus(code = HttpStatus.CREATED)
-	public CategoriaVo criarCategoria(@RequestBody CategoriaDescricaoVo categoriaDescricao) {
-		return new CategoriaVo(this.categoriaRepository
-				.save(CategoriaDescricaoVo.converterCategoria(categoriaDescricao.getDescricao())));
+	public ResponseEntity<?> criarCategoria(@Valid @RequestBody CategoriaDescricaoVo categoriaDescricao,
+			Errors errors) {
+		if (!errors.hasErrors()) {
+			return new ResponseEntity<CategoriaVo>(categoriaService.criarCategoria(categoriaDescricao),
+					HttpStatus.CREATED);
+		}
+
+		return ResponseEntity.badRequest().body(errors.getAllErrors().stream()
+				.map(mensagem -> mensagem.getDefaultMessage()).collect(Collectors.joining(",")));
 	}
 
 	@GetMapping("/lista-categoria")
 	@ResponseStatus(code = HttpStatus.OK)
 	@ResponseBody
-	public List<CategoriaVo> listaCategorias() {
-		return this.categoriaRepository.findAll().stream().map(categoria -> new CategoriaVo(categoria))
-				.collect(Collectors.toList());
+	public ResponseEntity<?> listaCategorias() {
+		return new ResponseEntity<List>(categoriaService.listaCategorias(), HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{id}")
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	public void deleteCategoria(@PathVariable("id") Long id) {
-		this.categoriaRepository.deleteById(id);
+		categoriaService.deleteCategoria(id);
 	}
 
 	@PatchMapping("/{id}")
 	@ResponseBody
 	@ResponseStatus(code = HttpStatus.OK)
-	public CategoriaVo atualizaCategoria(@PathVariable("id") Long id, @RequestBody CategoriaDescricaoVo descricao) {
-		return this.categoriaRepository.findById(id).map(categoria -> {
-			categoria.setDescricao(descricao.getDescricao());
+	public ResponseEntity<?> atualizaCategoria(@Valid @PathVariable("id") Long id,
+			@RequestBody CategoriaDescricaoVo descricao, Errors errors) {
 
-			this.categoriaRepository.save(categoria);
+		if (!errors.hasErrors()) {
+			return new ResponseEntity<CategoriaVo>(categoriaService.atualizaCategoria(id, descricao), HttpStatus.OK);
+		}
 
-			return new CategoriaVo(categoria);
-		}).get();
+		return ResponseEntity.badRequest().body(errors.getAllErrors().stream()
+				.map(mensagem -> mensagem.getDefaultMessage()).collect(Collectors.joining(",")));
 	}
 
 }

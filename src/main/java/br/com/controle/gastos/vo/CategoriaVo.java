@@ -2,6 +2,9 @@ package br.com.controle.gastos.vo;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.controle.gastos.models.Categoria;
@@ -9,6 +12,8 @@ import br.com.controle.gastos.models.Categoria;
 public class CategoriaVo {
 
 	private Long id;
+	@NotBlank(message = "Não é permitido categoria em branco")
+	@NotEmpty(message = "Não é permitido categoria vazia.")
 	private String descricao;
 	@JsonFormat(pattern = "dd/MM/yyyy")
 	private Date dataInclusao;
