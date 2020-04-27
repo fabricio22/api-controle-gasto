@@ -14,7 +14,7 @@ import br.com.controle.gastos.vo.CategoriaVo;
 
 @Service
 public class CategoriaServiceImpl implements CategoriaService {
-	
+
 	@Autowired
 	CategoriaRepository categoriaRepository;
 
@@ -25,37 +25,34 @@ public class CategoriaServiceImpl implements CategoriaService {
 
 	@Override
 	public CategoriaVo criarCategoria(CategoriaDescricaoVo categoriaDesricaoVo) {
-		 Categoria categoria = categoriaRepository.save(CategoriaDescricaoVo.converterCategoria(categoriaDesricaoVo.getDescricao()));
+		Categoria categoria = categoriaRepository
+				.save(CategoriaDescricaoVo.converterCategoria(categoriaDesricaoVo.getDescricao()));
 		return new CategoriaVo(categoria);
 	}
 
 	@Override
 	public List<CategoriaVo> listaCategorias() {
-		return categoriaRepository.findAll()
-				.stream()
-				.map(categoria -> new CategoriaVo(categoria))
+		return categoriaRepository.findAll().stream().map(categoria -> new CategoriaVo(categoria))
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public void deleteCategoria(Long id) {
-		categoriaRepository.deleteById(id);		
+		categoriaRepository.deleteById(id);
 	}
 
 	@Override
 	public CategoriaVo atualizaCategoria(Long id, CategoriaDescricaoVo descricao) {
-			Optional<Categoria> optionalCategoria = categoriaRepository.findById(id);
-			
-			if(optionalCategoria.isPresent()) { 
-				Categoria categoria = optionalCategoria.get();
-				categoria.setDescricao(descricao.getDescricao());
-				categoriaRepository.save(categoria);
-				return new CategoriaVo(categoria);
-			}
-			
-			return null;
+		Optional<Categoria> optionalCategoria = categoriaRepository.findById(id);
+
+		if (optionalCategoria.isPresent()) {
+			Categoria categoria = optionalCategoria.get();
+			categoria.setDescricao(descricao.getDescricao());
+			categoriaRepository.save(categoria);
+			return new CategoriaVo(categoria);
+		}
+
+		return null;
 	}
-	
-	
 
 }

@@ -23,7 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.controle.gastos.services.CategoriaService;
 import br.com.controle.gastos.vo.CategoriaDescricaoVo;
 import br.com.controle.gastos.vo.CategoriaVo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
+@Api(value = "Api Rest - Controle de Gastos - Módulo Categoria")
 @RestController
 @RequestMapping("/categoria")
 public class CategoriaController {
@@ -31,6 +34,7 @@ public class CategoriaController {
 	@Autowired
 	CategoriaService categoriaService;
 
+	@ApiOperation(value = "Retorna uma categoria por Id.")
 	@GetMapping("/{id}")
 	@ResponseBody
 	@ResponseStatus(code = HttpStatus.OK)
@@ -39,6 +43,7 @@ public class CategoriaController {
 		return new ResponseEntity<CategoriaVo>(categoriaRetornada, HttpStatus.OK);
 	}
 
+	@ApiOperation(value = "Cria uma categoria")
 	@PostMapping
 	@ResponseBody
 	@ResponseStatus(code = HttpStatus.CREATED)
@@ -53,6 +58,7 @@ public class CategoriaController {
 				.map(mensagem -> mensagem.getDefaultMessage()).collect(Collectors.joining(",")));
 	}
 
+	@ApiOperation(value = "Retorna uma lista de categoria")
 	@GetMapping("/lista-categoria")
 	@ResponseStatus(code = HttpStatus.OK)
 	@ResponseBody
@@ -60,12 +66,14 @@ public class CategoriaController {
 		return new ResponseEntity<List>(categoriaService.listaCategorias(), HttpStatus.OK);
 	}
 
+	@ApiOperation(value = "Remove uma categoria")
 	@DeleteMapping("/{id}")
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	public void deleteCategoria(@PathVariable("id") Long id) {
 		categoriaService.deleteCategoria(id);
 	}
 
+	@ApiOperation(value = "Atualiza Categoria")
 	@PatchMapping("/{id}")
 	@ResponseBody
 	@ResponseStatus(code = HttpStatus.OK)
