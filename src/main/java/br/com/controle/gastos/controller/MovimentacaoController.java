@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.controle.gastos.enums.TipoMovimento;
 import br.com.controle.gastos.models.Movimentacao;
 import br.com.controle.gastos.services.MovimentacoesService;
 import br.com.controle.gastos.vo.MovimentacaoVo;
 import br.com.controle.gastos.vo.MovimentoAtualizacaoVo;
+import br.com.controle.gastos.vo.SumarizacaoGeralVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -67,6 +67,14 @@ public class MovimentacaoController {
 	@ResponseStatus(code = HttpStatus.OK)
 	public void removeMovimento(@PathVariable("id") Long id) {
 		movimentacoesServices.removeMovimento(id);
+	}
+
+	@ApiOperation(value = "Retorna o valor Total Geral")
+	@GetMapping("/total-geral")
+
+	public ResponseEntity<?> getTotalGeral() {
+		return new ResponseEntity<SumarizacaoGeralVo>(movimentacoesServices.getTotalGeral(), HttpStatus.OK);
+
 	}
 
 }

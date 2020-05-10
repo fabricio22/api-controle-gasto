@@ -14,6 +14,7 @@ import br.com.controle.gastos.repository.MovimentacoesRepository;
 import br.com.controle.gastos.repository.SumarizacaoDiaRepository;
 import br.com.controle.gastos.vo.MovimentacaoVo;
 import br.com.controle.gastos.vo.MovimentoAtualizacaoVo;
+import br.com.controle.gastos.vo.SumarizacaoGeralVo;
 
 @Service
 public class MovimentacoesServiceImpl implements MovimentacoesService {
@@ -28,7 +29,7 @@ public class MovimentacoesServiceImpl implements MovimentacoesService {
 	public MovimentacaoVo criarMovimento(Movimentacao movimentacao) {
 
 		if (movimentacao.getTipoMovimento() == TipoMovimento.SAIDA) {
-			movimentacao.setValorMovimento(BigDecimal.valueOf(movimentacao.getValorMovimento().intValue() * -1));
+			movimentacao.setValorMovimento(BigDecimal.valueOf(movimentacao.getValorMovimento().doubleValue() * -1));
 		}
 
 		if (movimentacao.getTipoMovimento() == TipoMovimento.ENTRADA) {
@@ -93,6 +94,11 @@ public class MovimentacoesServiceImpl implements MovimentacoesService {
 
 		}).get();
 
+	}
+
+	@Override
+	public SumarizacaoGeralVo getTotalGeral() {
+		return this.sumarizacaoDiaRepository.getTotal();
 	}
 
 }
